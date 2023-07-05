@@ -3,6 +3,7 @@ import dash_daq as daq
 from utils import prepare_table_info
 from dash.dependencies import Input, Output, State, ClientsideFunction
 import dash_bootstrap_components as dbc
+import os
 
 
 # --------------- Data loading --------------------------------
@@ -175,4 +176,4 @@ app.clientside_callback(
 )
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug='DEBUG' not in os.environ or not os.environ['DEBUG'])

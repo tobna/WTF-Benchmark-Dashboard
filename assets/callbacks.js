@@ -5,7 +5,9 @@ if (!window.dash_clientside) {
 
 window.dash_clientside.clientside = {
     update_figure: function(metric_x, metric_y, runs, do_pareto, do_pareto_right, per_epoch, highlight_data, hidden_runs, layout_store) {
-        // TODO: check and reuse crop state
+        if (runs == null) {
+            return [{}, []]
+        }
         if (per_epoch) {
             data = this.per_epoch_figure(metric_y, runs, highlight_data, hidden_runs['per epoch'], layout_store)
         } else {
