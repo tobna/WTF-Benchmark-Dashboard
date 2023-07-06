@@ -42,7 +42,7 @@ app.layout = html.Div([
     dcc.Markdown('This data was collected for the paper [What Transformer to Favor: A Comparative Analysis of Efficiency in Vision Transformers](LINK). '
                  'We opensource our code on [GitHub](https://gitfront.io/r/user-5921586/dmRcCBtFqbtK/WhatTransformerToFavor/).'),
     html.H4('Citation'),
-    dcc.Markdown('```\nCitation...\n```'),
+    dcc.Markdown('```\nCitation coming soon...\n```'),
     dbc.Modal([
         dbc.ModalHeader(dbc.ModalTitle('This site uses cookies'), close_button=False),
         dbc.ModalBody('By clicking OK, you agree to our use of functionally necessary cookies!'),
