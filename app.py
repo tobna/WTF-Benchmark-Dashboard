@@ -40,7 +40,7 @@ app.layout = html.Div([
     dcc.Store(id='legend-entries', data=[]), dcc.Store(id='graph-layout-store', data={}),
     html.H2('Paper'),
     dcc.Markdown('This data was collected for the paper [What Transformer to Favor: A Comparative Analysis of Efficiency in Vision Transformers](LINK). '
-                 'We opensource our code on [GitHub](https://gitfront.io/r/user-5921586/dmRcCBtFqbtK/WhatTransformerToFavor/).'),
+                 'For more information on our methodology, checkout the paper and our [GitHub](https://gitfront.io/r/user-5921586/dmRcCBtFqbtK/WhatTransformerToFavor/).'),
     html.H4('Citation'),
     dcc.Markdown('```\nCitation coming soon...\n```'),
     dbc.Modal([
