@@ -176,4 +176,4 @@ app.clientside_callback(
 )
 
 if __name__ == '__main__':
-    app.run_server(debug='DEBUG' not in os.environ or not os.environ['DEBUG'])
+    app.run_server(debug=False)
