@@ -8,13 +8,7 @@ import os
 
 # --------------- Data loading --------------------------------
 tbl_data, tbl_cols, tbl_tooltips = prepare_table_info()
-point_metrics = ['image resolution (pretraining)', 'GPUS (pretraining)', 'lr (pretraining)',
-                 'image resolution (finetuning)', 'GPUs (finetuning)', 'lr (finetuning)',
-                 'inference VRAM @32', 'inference VRAM @128', 'inference VRAM @1', 'inference VRAM @64',
-                 'total finetuning time', 'total validation time', 'throughput', 'throughput batch size',
-                 'training VRAM', 'training VRAM (single GPU)', 'number of parameters', 'FLOPs',
-                 'validation loss', 'training loss', 'top-5 validation accuracy', 'top-5 training accuracy',
-                 'top-1 validation accuracy', 'top-1 training accuracy']
+point_metrics = ['throughput [ims/s]']
 point_metrics = sorted(point_metrics)
 
 
@@ -34,13 +28,13 @@ app.layout = html.Div([
     html.Div([
         html.P("x:", style={'display': 'inline-block', 'width': '10%'}),
         dcc.Dropdown(id='x-picker', clearable=False, style={'width': '40%', 'display': 'inline-block'},
-                     value='throughput', options=point_metrics),
+                     value='throughput [ims/s]', options=point_metrics),
         html.P("y:", style={'display': 'inline-block', 'width': '10%'}),
         dcc.Dropdown(id='y-picker', clearable=False, style={'width': '40%', 'display': 'inline-block'},
                      value='top-1 validation accuracy', options=point_metrics)
     ]),
     dash_table.DataTable(id='run-list', filter_action='native', columns=tbl_cols, data=tbl_data, tooltip=tbl_tooltips,
-                         style_table={'overflow': 'scroll', 'width': '100%', 'maxHeight': '100%'},
+                         style_table={'overflow': 'scroll', 'width': '100%', 'maxHeight': '100%'}, sort_action='native',
                          fixed_rows={'headers': True}, style_cell={'overflow': 'hidden', 'textOverflow': 'ellipsis'}),
     dcc.Store(id='highlight-store', data=[]), dcc.Store(id='hidden-runs-store', data={'per epoch': [], 'global': []}),
     dcc.Store(id='legend-entries', data=[]), dcc.Store(id='graph-layout-store', data={}),
@@ -176,4 +170,6 @@ app.clientside_callback(
 )
 
 if __name__ == '__main__':
-    app.run_server(debug=False)
+    debug = not 'DEBUG' in os.environ or os.environ['DEBUG']
+    print(f'Debug={debug}')
+    app.run_server(debug=debug)
