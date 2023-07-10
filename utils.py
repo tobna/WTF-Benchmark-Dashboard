@@ -78,9 +78,14 @@ _METRIC_CONVERSION_FACTOR = {
     'validation time (total) [h*GPUs]': 60**2,
 }
 
-def prepare_table_info():
-    with open(_DATA_FILE, 'r') as f:
+
+def load_data(file_name=None, order_by_date=False):
+    if file_name is None:
+        file_name = _DATA_FILE
+    with open(file_name, 'r') as f:
         runs = json.load(f)
+
+    runs = [run for run in runs if 'model' in run and run['model'] is not None and 'run_date' in run and run['run_date'] is not None]
 
     run_data = {metr_name: [run[metr_id] if metr_id in run else None for run in runs]
                 for metr_name, metr_id in _COLUMN_NAMES.items()}
@@ -102,6 +107,9 @@ def prepare_table_info():
                   'total finetuning time [h*GPUs]', 'total validation time [h*GPUs]', 'validation loss', 'training loss',
                   'top-5 validation accuracy', 'top-1 training accuracy', 'top-5 training accuracy']
 
+    if order_by_date:
+        cols_first.insert(1, 'run date')
+
     rest_cols = set(_COLUMN_NAMES.keys()).difference(set(cols_first))
     finetuning_cols = {col for col in rest_cols if '(finetuning)' in col}
     rest_cols = rest_cols.difference(finetuning_cols)
@@ -113,10 +121,17 @@ def prepare_table_info():
               + sorted(list(pretraining_cols)) + ['epoch_data']
 
     df['run date'] = pd.to_datetime(df['run date'], format=_DATETIME_FORMAT)
-    df = df.sort_values('model')
-    df = df.sort_values('taxonomy class')
+    if order_by_date:
+        df = df.sort_values('run date', ascending=False)
+    else:
+        df = df.sort_values('model')
+        df = df.sort_values('taxonomy class')
+    return df.to_dict('records'), columns
 
+
+def prepare_table_info(file_name=None, order_by_date=False):
+    data, columns = load_data(file_name=file_name, order_by_date=order_by_date)
     cols = [{'name': c, 'id': c} for c in columns if c != 'epoch_data']
     tooltips = {c: {'value': c, 'use_with': 'header'} for c in columns}
 
-    return df.to_dict('records'), cols, tooltips
+    return data, cols, tooltips

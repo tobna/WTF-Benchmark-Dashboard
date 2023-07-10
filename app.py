@@ -1,10 +1,18 @@
+import argparse
 from dash import Dash, html, dcc, dash_table
 import dash_daq as daq
 from utils import prepare_table_info
 from dash.dependencies import Input, Output, State, ClientsideFunction
 import dash_bootstrap_components as dbc
 import os
+from time import sleep
 
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-reload', action='store_true', help='reload current data every few seconds')
+
+RELOAD = parser.parse_args().reload
+RELOAD_FILE = 'data_tmp.json'
 
 # --------------- Data loading --------------------------------
 tbl_data, tbl_cols, tbl_tooltips = prepare_table_info()
@@ -38,7 +46,7 @@ app.layout = html.Div([
                          fixed_rows={'headers': True}, style_cell={'overflow': 'hidden', 'textOverflow': 'ellipsis'}),
     dcc.Store(id='highlight-store', data=[]), dcc.Store(id='hidden-runs-store', data={'per epoch': [], 'global': []}),
     dcc.Store(id='legend-entries', data=[]), dcc.Store(id='graph-layout-store', data={}),
-    html.H2('Paper'),
+] + ([dcc.Interval(id='update-data', interval=30*1000, n_intervals=0)] if RELOAD else [html.H2('Paper'),
     dcc.Markdown('This data was collected for the paper [What Transformer to Favor: A Comparative Analysis of Efficiency in Vision Transformers](LINK). '
                  'For more information on our methodology, checkout the paper and our [GitHub](https://gitfront.io/r/user-5921586/dmRcCBtFqbtK/WhatTransformerToFavor/).'),
     html.H4('Citation'),
@@ -47,8 +55,7 @@ app.layout = html.Div([
         dbc.ModalHeader(dbc.ModalTitle('This site uses cookies'), close_button=False),
         dbc.ModalBody('By clicking OK, you agree to our use of functionally necessary cookies!'),
         dbc.ModalFooter(dbc.Button('OK', id='cookie-ok-btn', n_clicks=0))
-    ], id='cookie-modal', is_open=True, centered=True, backdrop='static'),
-])
+    ], id='cookie-modal', is_open=True, centered=True, backdrop='static')]))
 
 
 
@@ -158,18 +165,40 @@ app.clientside_callback(
     output=Output('graph-layout-store', 'data')
 )
 
-app.clientside_callback(
-    ClientsideFunction(
-        namespace='clientside',
-        function_name='cookie_modal'
-    ),
-    inputs=[
-        Input('cookie-ok-btn', 'n_clicks')
-    ],
-    output=Output('cookie-modal', 'is_open')
-)
+if not RELOAD:
+    app.clientside_callback(
+        ClientsideFunction(
+            namespace='clientside',
+            function_name='cookie_modal'
+        ),
+        inputs=[
+            Input('cookie-ok-btn', 'n_clicks')
+        ],
+        output=Output('cookie-modal', 'is_open')
+    )
+
+if RELOAD:
+    @app.callback([Output('run-list', 'data'), Output('run-list', 'columns')], Input('update-data', 'n_intervals'))
+    def reload_data(n):
+        while not os.path.isfile(RELOAD_FILE):
+            sleep(10)
+
+        data, cols, _ = prepare_table_info(RELOAD_FILE, order_by_date=True)
+        print('reloaded data')
+        return data, cols
+
 
 if __name__ == '__main__':
     debug = not 'DEBUG' in os.environ or os.environ['DEBUG']
     print(f'Debug={debug}')
-    app.run_server(debug=debug)
+
+    try:
+        if RELOAD:
+            import data_updating
+            load_process = data_updating.start_data_process(n_workers=5, update_interval=30)
+
+        app.run_server(debug=debug)
+    except Exception as ex:
+        if RELOAD:
+            load_process.kill()
+        raise ex
