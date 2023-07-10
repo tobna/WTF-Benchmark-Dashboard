@@ -82,9 +82,11 @@ _METRIC_CONVERSION_FACTOR = {
     'validation time (total) [h*GPUs]': 60**2,
 }
 
+
 class _DummyFile():
     def write(self, *args, **kwargs):
         pass
+
 
 @contextlib.contextmanager
 def no_print():
@@ -92,6 +94,7 @@ def no_print():
     sys.stdout = _DummyFile()
     yield
     sys.stdout = save_stdout
+
 
 def load_data(file_name=None, order_by_date=False):
     if file_name is None:
