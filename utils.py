@@ -1,5 +1,9 @@
+import contextlib
 import json
 import os
+import sys
+from json import JSONDecodeError
+from time import sleep
 import pandas as pd
 import taxonomy as tx
 
@@ -78,12 +82,26 @@ _METRIC_CONVERSION_FACTOR = {
     'validation time (total) [h*GPUs]': 60**2,
 }
 
+class _DummyFile():
+    def write(self, *args, **kwargs):
+        pass
+
+@contextlib.contextmanager
+def no_print():
+    save_stdout = sys.stdout
+    sys.stdout = _DummyFile()
+    yield
+    sys.stdout = save_stdout
 
 def load_data(file_name=None, order_by_date=False):
     if file_name is None:
         file_name = _DATA_FILE
     with open(file_name, 'r') as f:
-        runs = json.load(f)
+        try:
+            runs = json.load(f)
+        except JSONDecodeError:
+            sleep(10)
+            runs = json.load(f)
 
     runs = [run for run in runs if 'model' in run and run['model'] is not None and 'run_date' in run and run['run_date'] is not None]
 
@@ -91,7 +109,8 @@ def load_data(file_name=None, order_by_date=False):
                 for metr_name, metr_id in _COLUMN_NAMES.items()}
     run_data = {k: [v_i / _METRIC_CONVERSION_FACTOR[k] if (isinstance(v_i, int) or isinstance(v_i, float)) and k in _METRIC_CONVERSION_FACTOR else v_i for v_i in v]
                 for k, v in run_data.items()}
-    run_data['taxonomy class'] = [tx.get_taxonomy_class(name) for name in run_data['model']]
+    with no_print():
+        run_data['taxonomy class'] = [tx.get_taxonomy_class(name) for name in run_data['model']]
     run_data['model'] = [tx.get_model_name(name) for name in run_data['model']]
     run_data['epoch_data'] = [{ep: {k: ep_data[k_old] / (_METRIC_CONVERSION_FACTOR[k] if k in _METRIC_CONVERSION_FACTOR else 1.)
                                                for k, k_old in _PER_EPOCH_METRICS.items() if k_old in ep_data} for ep, ep_data in run['epoch_data'].items()} for run in runs]

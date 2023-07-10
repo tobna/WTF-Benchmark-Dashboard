@@ -217,8 +217,9 @@ def _data_process(n_workers, update_interval):
         with Pool(n_workers) as p:
             runs = p.map(extract_run_data, logfiles)
         runs = [run for run in runs if 'run_name' in run and run['run_name'] is not None and len(run['run_name']) > 0]
-        with open(data_file_name, "w+") as f:
+        with open('data.tmp', "w+") as f:
             json.dump(runs, f)
+        os.replace('data.tmp', data_file_name)
         sleep_time = max(update_interval - time() + start, 0)
         sleep(sleep_time)
 

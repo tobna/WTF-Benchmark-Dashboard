@@ -6,6 +6,7 @@ from dash.dependencies import Input, Output, State, ClientsideFunction
 import dash_bootstrap_components as dbc
 import os
 from time import sleep
+import logging
 
 
 parser = argparse.ArgumentParser()
@@ -184,13 +185,16 @@ if RELOAD:
             sleep(10)
 
         data, cols, _ = prepare_table_info(RELOAD_FILE, order_by_date=True)
-        print('reloaded data')
+        logging.info('reloaded data')
         return data, cols
 
 
 if __name__ == '__main__':
     debug = not 'DEBUG' in os.environ or os.environ['DEBUG']
-    print(f'Debug={debug}')
+    logging.basicConfig(format=f"%(asctime)s; %(levelname)s: %(message)s",
+                        datefmt="%d.%m.%Y %H:%M:%S", level=logging.INFO,
+                        handlers=[logging.StreamHandler()])
+    logging.info(f'Debug={debug}')
 
     try:
         if RELOAD:
