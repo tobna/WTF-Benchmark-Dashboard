@@ -31,15 +31,15 @@ app.layout = html.Div([
                     style={'width': '10%', 'display': 'inline-block'}, size=30),
     daq.ToggleSwitch(id='overall-switch', style={'width': '15%', 'display': 'inline-block'},
                      label="overall stats <-> per epoch stats"),
-    dcc.Graph(id="graph", style={'width': '100vw', 'height': '80vh'}),
-    html.Div([
-        html.P("x:", style={'display': 'inline-block', 'width': '10%'}),
-        dcc.Dropdown(id='x-picker', clearable=False, style={'width': '40%', 'display': 'inline-block'},
-                     value='throughput [ims/s]', options=point_metrics),
-        html.P("y:", style={'display': 'inline-block', 'width': '10%'}),
-        dcc.Dropdown(id='y-picker', clearable=False, style={'width': '40%', 'display': 'inline-block'},
-                     value='top-1 validation accuracy', options=point_metrics)
-    ]),
+    dcc.Graph(id="graph", style={'width': '99vw', 'height': '80vh'}),
+    html.Table([html.Tbody([html.Tr([
+        html.Td(html.P("x:", style={'display': 'inline-block', 'width': '100%', 'textAlign': 'center', 'lineHeight': '34px', 'fontSize': '1.5rem', 'fontFamily': 'var(--bs-body-font-family)'})),
+        html.Td(dcc.Dropdown(id='x-picker', clearable=False, style={'width': '100%', 'display': 'inline-block'},
+                     value='throughput [ims/s]', options=point_metrics)),
+        html.Td(html.P("y:", style={'display': 'inline-block', 'width': '100%', 'textAlign': 'center', 'height': '34px', 'fontSize': '1.5rem', 'fontFamily': 'var(--bs-body-font-family)'})),
+        html.Td(dcc.Dropdown(id='y-picker', clearable=False, style={'width': '100%', 'display': 'inline-block'},
+                     value='top-1 validation accuracy', options=point_metrics))
+    ])])], style={'width': '95%', 'margin': '10px'}),
     dash_table.DataTable(id='run-list', filter_action='native', columns=tbl_cols, data=tbl_data, tooltip=tbl_tooltips,
                          style_table={'overflow': 'scroll', 'width': '100%', 'maxHeight': '100%'}, sort_action='native',
                          fixed_rows={'headers': True}, style_cell={'overflow': 'hidden', 'textOverflow': 'ellipsis'}),
