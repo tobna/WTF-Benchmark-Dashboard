@@ -146,8 +146,7 @@ def load_data(file_name=None, order_by_date=False):
     if order_by_date:
         df = df.sort_values('run date', ascending=False)
     else:
-        df = df.sort_values('model')
-        df = df.sort_values('taxonomy class')
+        df = df.sort_values(['taxonomy class', 'model'])
     return df.to_dict('records'), columns
 
 
