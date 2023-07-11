@@ -28,10 +28,8 @@ app.title = 'WTF Benchmark'
 app.layout = html.Div([
     html.H1(f"What Transformer to Favor: Benchmark", style={'width': '75%', 'display': 'inline-block'}),
     daq.PowerButton(id='pareto-pwr-btn', label='Pareto front', labelPosition='top',
-                    style={'width': '5%', 'display': 'inline-block'}, size=30),
-    daq.ToggleSwitch(id='pareto-side-switch', style={'width': '10%', 'display': 'inline-block'},
-                     label="left <-> right"),
-    daq.ToggleSwitch(id='overall-switch', style={'width': '10%', 'display': 'inline-block'},
+                    style={'width': '10%', 'display': 'inline-block'}, size=30),
+    daq.ToggleSwitch(id='overall-switch', style={'width': '15%', 'display': 'inline-block'},
                      label="overall stats <-> per epoch stats"),
     dcc.Graph(id="graph", style={'width': '100vw', 'height': '80vh'}),
     html.Div([
@@ -45,8 +43,11 @@ app.layout = html.Div([
     dash_table.DataTable(id='run-list', filter_action='native', columns=tbl_cols, data=tbl_data, tooltip=tbl_tooltips,
                          style_table={'overflow': 'scroll', 'width': '100%', 'maxHeight': '100%'}, sort_action='native',
                          fixed_rows={'headers': True}, style_cell={'overflow': 'hidden', 'textOverflow': 'ellipsis'}),
-    dcc.Store(id='highlight-store', data=[]), dcc.Store(id='hidden-runs-store', data={'per epoch': [], 'global': []}),
-    dcc.Store(id='legend-entries', data=[]), dcc.Store(id='graph-layout-store', data={}),
+    dcc.Store(id='highlight-store', data=[]),
+    dcc.Store(id='hidden-runs-store', data={'per epoch': [], 'global': []}),
+    dcc.Store(id='legend-entries', data=[]),
+    dcc.Store(id='graph-layout-store', data={}),
+    dcc.Store(id='pareto-right', data=True),
 ] + ([dcc.Interval(id='update-data', interval=30*1000, n_intervals=0)] if RELOAD else [html.H2('Paper'),
     dcc.Markdown('This data was collected for the paper [What Transformer to Favor: A Comparative Analysis of Efficiency in Vision Transformers](LINK). '
                  'For more information on our methodology, checkout the paper and our [GitHub](https://gitfront.io/r/user-5921586/dmRcCBtFqbtK/WhatTransformerToFavor/).'),
@@ -71,7 +72,7 @@ app.clientside_callback(
         Input('y-picker', 'value'),
         Input('run-list', 'derived_virtual_data'),
         Input('pareto-pwr-btn', 'on'),
-        Input('pareto-side-switch', 'value'),
+        Input('pareto-right', 'data'),
         Input('overall-switch', 'value'),
         Input('highlight-store', 'data')
     ],
@@ -128,10 +129,7 @@ app.clientside_callback(
         Input('pareto-pwr-btn', 'on'),
         Input('overall-switch', 'value')
     ],
-    output=[
-        Output('pareto-side-switch', 'disabled'),
-        Output('pareto-pwr-btn', 'disabled')
-    ]
+    output=Output('pareto-pwr-btn', 'disabled')
 )
 
 app.clientside_callback(
@@ -164,6 +162,17 @@ app.clientside_callback(
         State('graph-layout-store', 'data'),
     ],
     output=Output('graph-layout-store', 'data')
+)
+
+app.clientside_callback(
+    ClientsideFunction(
+        namespace='clientside',
+        function_name='pareto_right'
+    ),
+    inputs=[
+        Input('x-picker', 'value'),
+    ],
+    output=Output('pareto-right', 'data')
 )
 
 if not RELOAD:
