@@ -48,9 +48,11 @@ app.layout = html.Div([
     dcc.Store(id='legend-entries', data=[]),
     dcc.Store(id='graph-layout-store', data={}),
     dcc.Store(id='pareto-right', data=True),
-] + ([dcc.Interval(id='update-data', interval=30*1000, n_intervals=0)] if RELOAD else [html.H2('Paper'),
+] + ([dcc.Interval(id='update-data', interval=30*1000, n_intervals=0), dcc.Download('download-data'), html.Button("Download Data as CSV", 'download-btn')]
+                           if RELOAD else [html.H2('Paper'),
     dcc.Markdown('This data was collected for the paper [What Transformer to Favor: A Comparative Analysis of Efficiency in Vision Transformers](LINK). '
-                 'For more information on our methodology, checkout the paper and our [GitHub](https://gitfront.io/r/user-5921586/dmRcCBtFqbtK/WhatTransformerToFavor/).'),
+                 'Have fun playing around with it, and analyzing it deeper. '
+                 'For more information on our methodology, checkout the paper and [code](https://github.com/tobna/WhatTransformerToFavor).'),
     html.H4('Citation'),
     dcc.Markdown('```\nCitation coming soon...\n```'),
     dbc.Modal([
@@ -185,6 +187,21 @@ if not RELOAD:
             Input('cookie-ok-btn', 'n_clicks')
         ],
         output=Output('cookie-modal', 'is_open')
+    )
+
+if RELOAD:
+    app.clientside_callback(
+        ClientsideFunction(
+            namespace='clientside',
+            function_name='download_data'
+        ),
+        inputs=[
+            Input("download-btn", 'n_clicks')
+        ],
+        state=[
+            State('run-list', 'derived_virtual_data')
+        ],
+        output=Output('download-data', 'data')
     )
 
 if RELOAD:
