@@ -54,7 +54,16 @@ app.layout = html.Div([
                  'Have fun playing around with it, and analyzing it deeper. '
                  'For more information on our methodology, checkout the paper and [code](https://github.com/tobna/WhatTransformerToFavor).'),
     html.H4('Citation'),
-    dcc.Markdown('```\nCitation coming soon...\n```'),
+    dcc.Markdown('```\n'
+                 '@misc{Nauen2023WTFBenchmark,\n'
+                 '      title={Which Transformer to Favor: A Comparative Analysis of Efficiency in Vision Transformers},\n'
+                 '      author={Tobias Christian Nauen and Sebastian Palacio and Andreas Dengel},\n'
+                 '      year={2023},\n'
+                 '      eprint={2308.09372},\n'
+                 '      archivePrefix={arXiv},\n'
+                 '      primaryClass={cs.CV}\n'
+                 '}\n'
+                 '```'),
     dbc.Modal([
         dbc.ModalHeader(dbc.ModalTitle('This site uses cookies'), close_button=False),
         dbc.ModalBody('By clicking OK, you agree to our use of functionally necessary cookies!'),
