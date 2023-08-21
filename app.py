@@ -50,7 +50,7 @@ app.layout = html.Div([
     dcc.Store(id='pareto-right', data=True),
 ] + ([dcc.Interval(id='update-data', interval=30*1000, n_intervals=0), dcc.Download('download-data'), html.Button("Download Data as CSV", 'download-btn')]
                            if RELOAD else [html.H2('Paper'),
-    dcc.Markdown('This data was collected for the paper [What Transformer to Favor: A Comparative Analysis of Efficiency in Vision Transformers](LINK). '
+    dcc.Markdown('This data was collected for the paper [What Transformer to Favor: A Comparative Analysis of Efficiency in Vision Transformers](https://arxiv.org/abs/2308.09372). '
                  'Have fun playing around with it, and analyzing it deeper. '
                  'For more information on our methodology, checkout the paper and [code](https://github.com/tobna/WhatTransformerToFavor).'),
     html.H4('Citation'),
