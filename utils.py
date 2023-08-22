@@ -96,7 +96,7 @@ def no_print():
     sys.stdout = save_stdout
 
 
-def load_data(file_name=None, order_by_date=False):
+def load_data(file_name=None, order_by_date=False, include_run_name=False):
     if file_name is None:
         file_name = _DATA_FILE
     with open(file_name, 'r') as f:
@@ -142,6 +142,9 @@ def load_data(file_name=None, order_by_date=False):
     columns = cols_first + sorted(list(finetuning_cols)) + sorted(list(augmentation_cols)) + sorted(list(rest_cols)) \
               + sorted(list(pretraining_cols)) + ['epoch_data']
 
+    if not include_run_name:
+        columns.remove('run name')
+
     df['run date'] = pd.to_datetime(df['run date'], format=_DATETIME_FORMAT)
     if order_by_date:
         df = df.sort_values('run date', ascending=False)
@@ -150,8 +153,8 @@ def load_data(file_name=None, order_by_date=False):
     return df.to_dict('records'), columns
 
 
-def prepare_table_info(file_name=None, order_by_date=False):
-    data, columns = load_data(file_name=file_name, order_by_date=order_by_date)
+def prepare_table_info(file_name=None, order_by_date=False, include_run_name=False):
+    data, columns = load_data(file_name=file_name, order_by_date=order_by_date, include_run_name=include_run_name)
     cols = [{'name': c, 'id': c} for c in columns if c != 'epoch_data']
     tooltips = {c: {'value': c, 'use_with': 'header'} for c in columns}
 

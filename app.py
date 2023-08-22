@@ -54,7 +54,7 @@ app.layout = html.Div([
                  'Have fun playing around with it, and analyzing it deeper. '
                  'For more information on our methodology, checkout the paper and [code](https://github.com/tobna/WhatTransformerToFavor).'),
     html.H4('Citation'),
-    dcc.Markdown('```\n'
+    dcc.Markdown('```BibTeX\n'
                  '@misc{Nauen2023WTFBenchmark,\n'
                  '      title={Which Transformer to Favor: A Comparative Analysis of Efficiency in Vision Transformers},\n'
                  '      author={Tobias Christian Nauen and Sebastian Palacio and Andreas Dengel},\n'
@@ -219,7 +219,7 @@ if RELOAD:
         while not os.path.isfile(RELOAD_FILE):
             sleep(10)
 
-        data, cols, _ = prepare_table_info(RELOAD_FILE, order_by_date=True)
+        data, cols, _ = prepare_table_info(RELOAD_FILE, order_by_date=True, include_run_name=True)
         logging.info('reloaded data')
         return data, cols
 
