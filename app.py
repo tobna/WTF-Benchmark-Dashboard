@@ -26,7 +26,7 @@ app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 app.title = 'WTF Benchmark'
 app.layout = html.Div([
-    html.H1(f"What Transformer to Favor: Benchmark", style={'width': '75%', 'display': 'inline-block'}),
+    html.H1(f"Which Transformer to Favor: Benchmark", style={'width': '75%', 'display': 'inline-block'}),
     daq.PowerButton(id='pareto-pwr-btn', label='Pareto front', labelPosition='top',
                     style={'width': '10%', 'display': 'inline-block'}, size=30),
     daq.ToggleSwitch(id='overall-switch', style={'width': '15%', 'display': 'inline-block'},
